@@ -12,42 +12,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              required:
-                - fecha
-                - titulo
-              properties:
-                fecha:
-                  type: string
-                  format: date-time
-                  example: 2026-03-18T00:00:00.000Z
-                hora:
-                  type: string
-                  nullable: true
-                  example: "08:30"
-                titulo:
-                  type: string
-                  example: Caminata al amanecer
-                descripcion:
-                  type: string
-                  nullable: true
-                  example: Fue una manana fria con cielo despejado.
-                fotoUrl:
-                  type: string
-                  nullable: true
-                  example: https://cdn.example.com/fotos/memoria-1.jpg
-                ubicacion:
-                  type: string
-                  nullable: true
-                  example: Caracas, Venezuela
-                moodColor:
-                  type: string
-                  nullable: true
-                  example: '#FFD166'
-                cancionUrl:
-                  type: string
-                  nullable: true
-                  example: https://open.spotify.com/track/xyz
+              $ref: '#/components/schemas/CreateMemoriaInput'
       responses:
         '201':
           description: Memoria creada correctamente
@@ -132,6 +97,44 @@ paths:
 
 components:
   schemas:
+    CreateMemoriaInput:
+      type: object
+      required:
+        - fecha
+        - titulo
+      properties:
+        fecha:
+          type: string
+          format: date-time
+          example: 2026-03-18T00:00:00.000Z
+        hora:
+          type: string
+          nullable: true
+          example: "08:30"
+        titulo:
+          type: string
+          example: Caminata al amanecer
+        descripcion:
+          type: string
+          nullable: true
+          example: Fue una manana fria con cielo despejado.
+        fotoUrl:
+          type: string
+          nullable: true
+          example: https://cdn.example.com/fotos/memoria-1.jpg
+        ubicacion:
+          type: string
+          nullable: true
+          example: Caracas, Venezuela
+        moodColor:
+          type: string
+          nullable: true
+          example: '#FFD166'
+        cancionUrl:
+          type: string
+          nullable: true
+          example: https://open.spotify.com/track/xyz
+
     Memoria:
       type: object
       required:

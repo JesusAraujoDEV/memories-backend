@@ -10,19 +10,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              required:
-                - nombre
-                - password
-              properties:
-                nombre:
-                  type: string
-                  minLength: 3
-                  example: jesus_araujo
-                password:
-                  type: string
-                  minLength: 8
-                  example: mySecurePassword123
+              $ref: '#/components/schemas/RegisterInput'
       responses:
         '201':
           description: Usuario creado correctamente con token de acceso
@@ -46,17 +34,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              required:
-                - nombre
-                - password
-              properties:
-                nombre:
-                  type: string
-                  example: jesus_araujo
-                password:
-                  type: string
-                  example: mySecurePassword123
+              $ref: '#/components/schemas/LoginInput'
       responses:
         '200':
           description: Login exitoso
@@ -71,6 +49,35 @@ paths:
 
 components:
   schemas:
+    RegisterInput:
+      type: object
+      required:
+        - nombre
+        - password
+      properties:
+        nombre:
+          type: string
+          minLength: 3
+          example: jesus_araujo
+        password:
+          type: string
+          minLength: 4
+          example: mySecurePassword123
+
+    LoginInput:
+      type: object
+      required:
+        - nombre
+        - password
+      properties:
+        nombre:
+          type: string
+          example: jesus_araujo
+        password:
+          type: string
+          minLength: 1
+          example: mySecurePassword123
+
     Usuario:
       type: object
       required:

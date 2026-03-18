@@ -37,6 +37,12 @@ export function errorHandlerMiddleware(
     return;
   }
 
+  console.error("[UnhandledError]", {
+    name: error.name,
+    message: error.message,
+    stack: error.stack,
+  });
+
   const payload: ErrorPayload = {
     message: "Internal server error",
   };
