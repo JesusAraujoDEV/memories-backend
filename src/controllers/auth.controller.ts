@@ -9,7 +9,7 @@ const registerSchema = z.object({
     .trim()
     .min(3, "nombre must contain at least 3 characters")
     .max(80, "nombre must contain at most 80 characters"),
-  password: z.string().min(8, "password must contain at least 8 characters").max(128),
+  password: z.string().min(4, "password must contain at least 4 characters").max(128),
 });
 
 const loginSchema = z.object({
