@@ -1,0 +1,191 @@
+paths:
+  /api/memorias:
+    post:
+      tags:
+        - Memorias
+      summary: Crear una memoria
+      description: Crea una nueva memoria para un usuario.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - fecha
+                - titulo
+              properties:
+                fecha:
+                  type: string
+                  format: date-time
+                  example: 2026-03-18T00:00:00.000Z
+                hora:
+                  type: string
+                  nullable: true
+                  example: "08:30"
+                titulo:
+                  type: string
+                  example: Caminata al amanecer
+                descripcion:
+                  type: string
+                  nullable: true
+                  example: Fue una manana fria con cielo despejado.
+                fotoUrl:
+                  type: string
+                  nullable: true
+                  example: https://cdn.example.com/fotos/memoria-1.jpg
+                ubicacion:
+                  type: string
+                  nullable: true
+                  example: Caracas, Venezuela
+                moodColor:
+                  type: string
+                  nullable: true
+                  example: '#FFD166'
+                cancionUrl:
+                  type: string
+                  nullable: true
+                  example: https://open.spotify.com/track/xyz
+      responses:
+        '201':
+          description: Memoria creada correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Memoria'
+        '400':
+          description: Datos invalidos o incompletos
+        '401':
+          description: No autorizado
+        '404':
+          description: Usuario no encontrado
+
+    get:
+      tags:
+        - Memorias
+      summary: Obtener memorias por mes
+      description: Lista las memorias filtradas por anio y mes.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: year
+          required: true
+          schema:
+            type: integer
+            minimum: 1970
+            example: 2026
+          description: Anio del calendario a consultar.
+        - in: query
+          name: month
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 12
+            example: 3
+          description: Mes del calendario a consultar.
+      responses:
+        '200':
+          description: Listado de memorias del mes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Memoria'
+        '400':
+          description: Parametros de consulta invalidos
+        '401':
+          description: No autorizado
+
+  /api/memorias/{id}:
+    get:
+      tags:
+        - Memorias
+      summary: Obtener una memoria por id
+      description: Retorna una memoria especifica del usuario autenticado.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int32
+            example: 1
+          description: Identificador unico de la memoria.
+      responses:
+        '200':
+          description: Memoria encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Memoria'
+        '401':
+          description: No autorizado
+        '404':
+          description: Memoria no encontrada
+
+components:
+  schemas:
+    Memoria:
+      type: object
+      required:
+        - id
+        - fecha
+        - titulo
+        - usuarioId
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: integer
+          format: int32
+          example: 1
+        fecha:
+          type: string
+          format: date-time
+          example: 2026-03-18T00:00:00.000Z
+        hora:
+          type: string
+          nullable: true
+          example: "08:30"
+        titulo:
+          type: string
+          example: Caminata al amanecer
+        descripcion:
+          type: string
+          nullable: true
+          example: Fue una manana fria con cielo despejado.
+        fotoUrl:
+          type: string
+          nullable: true
+          example: https://cdn.example.com/fotos/memoria-1.jpg
+        ubicacion:
+          type: string
+          nullable: true
+          example: Caracas, Venezuela
+        moodColor:
+          type: string
+          nullable: true
+          example: '#FFD166'
+        cancionUrl:
+          type: string
+          nullable: true
+          example: https://open.spotify.com/track/xyz
+        usuarioId:
+          type: integer
+          format: int32
+          example: 1
+        createdAt:
+          type: string
+          format: date-time
+          example: 2026-03-18T00:00:00.000Z
+        updatedAt:
+          type: string
+          format: date-time
+          example: 2026-03-18T00:00:00.000Z

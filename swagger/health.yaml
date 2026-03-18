@@ -1,0 +1,26 @@
+paths:
+  /api/health:
+    get:
+      tags:
+        - Health
+      summary: Health check del servidor
+      description: Verifica que la API este activa y respondiendo.
+      responses:
+        '200':
+          description: Estado del servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - status
+                  - timestamp
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  timestamp:
+                    type: string
+                    format: date-time
+        '500':
+          description: Error interno del servidor
