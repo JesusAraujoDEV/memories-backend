@@ -12,6 +12,15 @@ datasource db {
   provider = "postgresql"
 }
 
+model Usuario {
+  id        Int       @id @default(autoincrement())
+  nombre    String    @unique
+  password  String
+  memorias  Memoria[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
 model Memoria {
   id          Int      @id @default(autoincrement())
   fecha       DateTime
@@ -22,8 +31,11 @@ model Memoria {
   ubicacion   String?
   moodColor   String?
   cancionUrl  String?
+  usuarioId   Int
+  usuario     Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   @@index([fecha, hora])
+  @@index([usuarioId])
 }
