@@ -1,4 +1,5 @@
 import express, { Application } from "express";
+import morgan from "morgan";
 import swaggerUi from "swagger-ui-express";
 
 import { swaggerSpec } from "./config/swagger";
@@ -9,8 +10,19 @@ import { apiRouter } from "./routes";
 const app: Application = express();
 
 app.disable("x-powered-by");
+app.disable("etag");
 app.use(corsMiddleware);
 app.use(express.json({ limit: "1mb" }));
+app.use(morgan("dev"));
+
+// Desactivar cache y forzar a los clientes a pedir datos frescos.
+app.use((req, res, next) => {
+	res.set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+	res.set("Pragma", "no-cache");
+	res.set("Expires", "0");
+	res.set("Surrogate-Control", "no-store");
+	next();
+});
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use("/api", apiRouter);

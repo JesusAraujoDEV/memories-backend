@@ -30,31 +30,40 @@ paths:
     get:
       tags:
         - Memorias
-      summary: Obtener memorias por mes
-      description: Lista las memorias filtradas por anio y mes.
+      summary: Obtener memorias (timeline o calendario)
+      description: Retorna el timeline completo si no se envian filtros. Si se envian year y month, filtra por ese mes y opcionalmente por day.
       security:
         - bearerAuth: []
       parameters:
         - in: query
           name: year
-          required: true
+          required: false
           schema:
             type: integer
             minimum: 1970
             example: 2026
-          description: Anio del calendario a consultar.
+          description: Anio del calendario a consultar. Opcional, pero debe enviarse junto con month.
         - in: query
           name: month
-          required: true
+          required: false
           schema:
             type: integer
             minimum: 1
             maximum: 12
             example: 3
-          description: Mes del calendario a consultar.
+          description: Mes del calendario a consultar. Opcional, pero debe enviarse junto con year.
+        - in: query
+          name: day
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 31
+            example: 19
+          description: Dia del mes a consultar. Requiere year y month. Si se omite, retorna el mes completo.
       responses:
         '200':
-          description: Listado de memorias del mes
+          description: Listado de memorias ordenadas de mas reciente a mas antigua
           content:
             application/json:
               schema:
@@ -100,12 +109,12 @@ components:
     CreateMemoriaInput:
       type: object
       required:
-        - fecha
-        - titulo
+        - descripcion
       properties:
         fecha:
           type: string
           format: date-time
+          nullable: true
           example: 2026-03-18T00:00:00.000Z
         hora:
           type: string
@@ -113,10 +122,11 @@ components:
           example: "08:30"
         titulo:
           type: string
+          nullable: true
           example: Caminata al amanecer
         descripcion:
           type: string
-          nullable: true
+          nullable: false
           example: Fue una manana fria con cielo despejado.
         fotoUrl:
           type: string
@@ -131,8 +141,15 @@ components:
           nullable: true
           example: '#FFD166'
         cancionUrl:
-          type: string
+          oneOf:
+            - type: string
+              format: uri
+              maxLength: 2048
+            - type: string
+              enum:
+                - ""
           nullable: true
+          description: URL de cancion opcional. Acepta null, cadena vacia o una URL valida.
           example: https://open.spotify.com/track/xyz
 
     Memoria:
@@ -192,3 +209,19 @@ components:
           type: string
           format: date-time
           example: 2026-03-18T00:00:00.000Z
+        usuario:
+          $ref: '#/components/schemas/MemoriaAuthor'
+
+    MemoriaAuthor:
+      type: object
+      required:
+        - id
+        - nombre
+      properties:
+        id:
+          type: integer
+          format: int32
+          example: 2
+        nombre:
+          type: string
+          example: pareja_cronocapsula
