@@ -6,8 +6,10 @@ import {
   CreateMemoriaInput,
   MemoriasByMonthInput,
   createMemoriaForUser,
+  deleteMemoriaForUser,
   findMemoriaByIdForUser,
   findMemoriasByMonth,
+  updateMemoriaForUser,
 } from "../services/memoria.service";
 import { AppError } from "../utils/appError";
 
@@ -73,6 +75,17 @@ const optionalDayQuerySchema = z.preprocess(
 );
 
 const createMemoriaSchema = z.object({
+  fecha: z.coerce.date().optional(),
+  hora: z.string().trim().min(1).max(20).optional(),
+  titulo: z.string().trim().min(1).max(200).optional(),
+  descripcion: z.string().trim().min(1).max(5000),
+  fotoUrl: z.url().max(2048).optional(),
+  ubicacion: z.string().trim().max(255).optional(),
+  moodColor: z.string().trim().max(32).optional(),
+  cancionUrl: optionalSongUrlSchema,
+});
+
+const updateMemoriaSchema = z.object({
   fecha: z.coerce.date().optional(),
   hora: z.string().trim().min(1).max(20).optional(),
   titulo: z.string().trim().min(1).max(200).optional(),
@@ -223,6 +236,47 @@ export async function getMemoriaById(req: Request, res: Response, next: NextFunc
     const userId: number = getAuthenticatedUserId(req);
     const memoria = await findMemoriaByIdForUser(userId, parsedParams.data.id);
     res.status(200).json(memoria);
+  } catch (error: unknown) {
+    next(error);
+  }
+}
+
+export async function updateMemoria(req: Request, res: Response, next: NextFunction): Promise<void> {
+  const parsedParams = memoriaIdSchema.safeParse(req.params);
+
+  if (!parsedParams.success) {
+    sendValidationError(res, parsedParams.error);
+    return;
+  }
+
+  const parsedBody = updateMemoriaSchema.safeParse(req.body);
+
+  if (!parsedBody.success) {
+    sendValidationError(res, parsedBody.error);
+    return;
+  }
+
+  try {
+    const userId: number = getAuthenticatedUserId(req);
+    const memoria = await updateMemoriaForUser(userId, parsedParams.data.id, parsedBody.data);
+    res.status(200).json(memoria);
+  } catch (error: unknown) {
+    next(error);
+  }
+}
+
+export async function deleteMemoria(req: Request, res: Response, next: NextFunction): Promise<void> {
+  const parsedParams = memoriaIdSchema.safeParse(req.params);
+
+  if (!parsedParams.success) {
+    sendValidationError(res, parsedParams.error);
+    return;
+  }
+
+  try {
+    const userId: number = getAuthenticatedUserId(req);
+    await deleteMemoriaForUser(userId, parsedParams.data.id);
+    res.status(204).send();
   } catch (error: unknown) {
     next(error);
   }

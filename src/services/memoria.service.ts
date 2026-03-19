@@ -20,6 +20,17 @@ export interface MemoriasByMonthInput {
   day?: number;
 }
 
+export interface UpdateMemoriaInput {
+  fecha?: Date;
+  hora?: string;
+  titulo?: string;
+  descripcion: string;
+  fotoUrl?: string;
+  ubicacion?: string;
+  moodColor?: string;
+  cancionUrl?: string;
+}
+
 const memoriaWithAuthorSelect = Prisma.validator<Prisma.MemoriaDefaultArgs>()({
   include: {
     usuario: {
@@ -36,6 +47,11 @@ export type MemoriaWithAuthor = Prisma.MemoriaGetPayload<typeof memoriaWithAutho
 interface DateRange {
   startDate: Date;
   endDate: Date;
+}
+
+interface MemoriaOwnershipRecord {
+  id: number;
+  usuarioId: number;
 }
 
 function buildDateRange(year: number, month: number, day?: number): DateRange {
@@ -96,12 +112,64 @@ export async function findMemoriasByMonth(input: MemoriasByMonthInput): Promise<
   });
 }
 
-export async function findMemoriaByIdForUser(userId: number, memoriaId: number): Promise<Memoria> {
-  const memoria: Memoria | null = await prisma.memoria.findFirst({
+async function validateMemoriaOwnership(userId: number, memoriaId: number): Promise<MemoriaOwnershipRecord> {
+  const memoria: MemoriaOwnershipRecord | null = await prisma.memoria.findUnique({
+    where: { id: memoriaId },
+    select: {
+      id: true,
+      usuarioId: true,
+    },
+  });
+
+  if (!memoria) {
+    throw new AppError("Memoria not found", 404);
+  }
+
+  if (memoria.usuarioId !== userId) {
+    throw new AppError("You are not authorized to modify this memoria", 401);
+  }
+
+  return memoria;
+}
+
+export async function updateMemoriaForUser(
+  userId: number,
+  memoriaId: number,
+  input: UpdateMemoriaInput,
+): Promise<MemoriaWithAuthor> {
+  await validateMemoriaOwnership(userId, memoriaId);
+
+  return prisma.memoria.update({
+    where: { id: memoriaId },
+    data: {
+      fecha: input.fecha,
+      hora: input.hora,
+      titulo: input.titulo,
+      descripcion: input.descripcion,
+      fotoUrl: input.fotoUrl,
+      ubicacion: input.ubicacion,
+      moodColor: input.moodColor,
+      cancionUrl: input.cancionUrl,
+    },
+    include: memoriaWithAuthorSelect.include,
+  });
+}
+
+export async function deleteMemoriaForUser(userId: number, memoriaId: number): Promise<void> {
+  await validateMemoriaOwnership(userId, memoriaId);
+
+  await prisma.memoria.delete({
+    where: { id: memoriaId },
+  });
+}
+
+export async function findMemoriaByIdForUser(userId: number, memoriaId: number): Promise<MemoriaWithAuthor> {
+  const memoria: MemoriaWithAuthor | null = await prisma.memoria.findFirst({
     where: {
       id: memoriaId,
       usuarioId: userId,
     },
+    include: memoriaWithAuthorSelect.include,
   });
 
   if (!memoria) {
