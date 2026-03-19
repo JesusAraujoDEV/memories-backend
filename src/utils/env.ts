@@ -7,6 +7,9 @@ interface EnvConfig {
   backendUrl: string;
   port: number;
   jwtSecret: string;
+  cloudinaryCloudName: string;
+  cloudinaryApiKey: string;
+  cloudinaryApiSecret: string;
   whitelistUrls: string[];
 }
 
@@ -48,5 +51,8 @@ export const env: EnvConfig = {
   backendUrl: getRequiredEnv("BACKEND_URL"),
   port: parsePort(getRequiredEnv("PORT")),
   jwtSecret: getRequiredEnv("JWT_SECRET"),
+  cloudinaryCloudName: getRequiredEnv("CLOUDINARY_CLOUD_NAME"),
+  cloudinaryApiKey: getRequiredEnv("CLOUDINARY_API_KEY"),
+  cloudinaryApiSecret: getRequiredEnv("CLOUDINARY_API_SECRET"),
   whitelistUrls: parseWhitelist(getRequiredEnv("WHITELIST_URLS")),
 };
