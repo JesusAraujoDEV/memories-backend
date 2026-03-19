@@ -23,6 +23,9 @@
     "url": "https://github.com/JesusAraujoDEV/memories-backend/issues"
   },
   "homepage": "https://github.com/JesusAraujoDEV/memories-backend#readme",
+  "engines": {
+    "node": ">=22.12.0"
+  },
   "dependencies": {
     "@prisma/adapter-pg": "^7.5.0",
     "@prisma/client": "^7.5.0",
