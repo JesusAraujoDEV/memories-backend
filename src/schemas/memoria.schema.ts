@@ -5,7 +5,20 @@ const optionalQueryNumber = (min: number, max: number) =>
     .union([z.coerce.number().int().min(min).max(max), z.literal(""), z.undefined()])
     .transform((value): number | undefined => (value === "" ? undefined : value));
 
-const optionalPhotoUrlSchema = z.union([z.string().url().max(2048), z.literal("")]).nullish();
+// Usamos .refine para validar la URL de forma nativa sin usar la función deprecada de Zod
+const optionalPhotoUrlSchema = z.union([
+  z.string()
+    .max(2048)
+    .refine((val) => {
+      try {
+        new URL(val);
+        return true;
+      } catch {
+        return false;
+      }
+    }, { message: "Invalid URL format" }),
+  z.literal("")
+]).nullish();
 
 export const createMemoriaSchema = z.object({
   descripcion: z.string().trim().min(1).max(5000),
@@ -33,7 +46,7 @@ export const monthQuerySchema = z
     if (hasYear !== hasMonth) {
       if (!hasYear) {
         context.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: "custom", // <-- CORREGIDO AQUÍ
           path: ["year"],
           message: "year is required when month is provided",
         });
@@ -41,7 +54,7 @@ export const monthQuerySchema = z
 
       if (!hasMonth) {
         context.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: "custom", // <-- CORREGIDO AQUÍ
           path: ["month"],
           message: "month is required when year is provided",
         });
@@ -52,7 +65,7 @@ export const monthQuerySchema = z
 
     if (!hasYear && value.day !== undefined) {
       context.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: "custom", // <-- CORREGIDO AQUÍ
         path: ["day"],
         message: "day requires year and month",
       });
@@ -67,7 +80,7 @@ export const monthQuerySchema = z
 
     if (value.day > daysInMonth) {
       context.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: "custom", // <-- CORREGIDO AQUÍ
         path: ["day"],
         message: `day must be between 1 and ${daysInMonth} for month ${value.month} and year ${value.year}`,
       });

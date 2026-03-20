@@ -5,5 +5,18 @@ export const searchQuerySchema = z.object({
 });
 
 export const proxyQuerySchema = z.object({
-  url: z.string().trim().url().max(2048),
+  url: z.string()
+    .trim()
+    .max(2048)
+    .refine(
+      (val) => {
+        try {
+          new URL(val);
+          return true;
+        } catch {
+          return false;
+        }
+      },
+      { message: "Invalid URL format" }
+    ),
 });
