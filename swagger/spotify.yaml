@@ -1,0 +1,141 @@
+paths:
+  /api/spotify/search:
+    get:
+      tags:
+        - Spotify
+      summary: Buscar canciones en Spotify
+      description: Busca canciones en Spotify y devuelve un arreglo limpio para el frontend.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: q
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 200
+            example: Yellow Coldplay
+          description: Texto de busqueda para canciones.
+      responses:
+        '200':
+          description: Resultados de canciones encontrados
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SpotifyTrackSearchResult'
+        '400':
+          description: Query invalida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpotifyErrorResponse'
+        '401':
+          description: No autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpotifyErrorResponse'
+        '502':
+          description: Error al consultar Spotify
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpotifyErrorResponse'
+
+  /api/spotify/proxy:
+    get:
+      tags:
+        - Spotify
+      summary: Proxy transparente de preview de audio
+      description: Obtiene y transmite el audio preview de Spotify desde un dominio permitido de forma auditable.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: url
+          required: true
+          schema:
+            type: string
+            format: uri
+            maxLength: 2048
+            example: https://p.scdn.co/mp3-preview/example
+          description: URL de preview devuelta por Spotify.
+      responses:
+        '200':
+          description: Stream de audio mp3
+          content:
+            audio/mpeg:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: URL invalida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpotifyErrorResponse'
+        '401':
+          description: No autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpotifyErrorResponse'
+        '403':
+          description: Dominio de URL no permitido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpotifyErrorResponse'
+        '404':
+          description: Audio preview no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpotifyErrorResponse'
+        '502':
+          description: Error al transmitir audio desde Spotify
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpotifyErrorResponse'
+
+components:
+  schemas:
+    SpotifyTrackSearchResult:
+      type: object
+      required:
+        - id
+        - name
+        - artist
+      properties:
+        id:
+          type: string
+          example: 3AJwUDP919kvQ9QcozQPxg
+        name:
+          type: string
+          example: Yellow
+        artist:
+          type: string
+          example: Coldplay
+        albumArt:
+          type: string
+          format: uri
+          nullable: true
+          example: https://i.scdn.co/image/ab67616d00001e02c7f7f13d8f4f5f8f3b6f1a12
+        previewUrl:
+          type: string
+          format: uri
+          nullable: true
+          example: https://p.scdn.co/mp3-preview/example
+
+    SpotifyErrorResponse:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          example: Failed to search tracks on Spotify

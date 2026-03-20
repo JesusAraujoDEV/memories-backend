@@ -10,6 +10,8 @@ interface EnvConfig {
   cloudinaryCloudName: string;
   cloudinaryApiKey: string;
   cloudinaryApiSecret: string;
+  spotifyClientId: string;
+  spotifyClientSecret: string;
   whitelistUrls: string[];
 }
 
@@ -54,5 +56,7 @@ export const env: EnvConfig = {
   cloudinaryCloudName: getRequiredEnv("CLOUDINARY_CLOUD_NAME"),
   cloudinaryApiKey: getRequiredEnv("CLOUDINARY_API_KEY"),
   cloudinaryApiSecret: getRequiredEnv("CLOUDINARY_API_SECRET"),
+  spotifyClientId: getRequiredEnv("SPOTIFY_CLIENT_ID"),
+  spotifyClientSecret: getRequiredEnv("SPOTIFY_CLIENT_SECRET"),
   whitelistUrls: parseWhitelist(getRequiredEnv("WHITELIST_URLS")),
 };
