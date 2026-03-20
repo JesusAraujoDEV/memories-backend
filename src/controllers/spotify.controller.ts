@@ -1,30 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import { Readable } from "stream";
-import { z } from "zod";
 
+import { proxyQuerySchema, searchQuerySchema } from "../schemas/spotify.schema";
 import { getSpotifyPreviewStream, searchSpotifyTracks } from "../services/spotify.service";
-
-const searchQuerySchema = z.object({
-  q: z.string().trim().min(1).max(200),
-});
-
-const proxyQuerySchema = z.object({
-  url: z.string().trim().url().max(2048),
-});
-
-interface ValidationErrorResponse {
-  message: string;
-  details: string[];
-}
-
-function sendValidationError(res: Response, error: z.ZodError): void {
-  const payload: ValidationErrorResponse = {
-    message: "Validation failed",
-    details: error.issues.map((issue) => `${issue.path.join(".")}: ${issue.message}`),
-  };
-
-  res.status(400).json(payload);
-}
+import { sendValidationError } from "../utils/validation.util";
 
 export async function spotifySearch(req: Request, res: Response, next: NextFunction): Promise<void> {
   const parsedQuery = searchQuerySchema.safeParse(req.query);

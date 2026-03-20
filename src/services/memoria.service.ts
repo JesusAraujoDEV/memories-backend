@@ -4,14 +4,14 @@ import { AppError } from "../utils/appError";
 import { prisma } from "../utils/prisma";
 
 export interface CreateMemoriaInput {
-  fecha?: Date;
-  hora?: string;
-  titulo?: string;
+  fecha?: Date | null;
+  hora?: string | null;
+  titulo?: string | null;
   descripcion: string;
-  fotoUrl?: string;
-  ubicacion?: string;
-  moodColor?: string;
-  cancionUrl?: string;
+  fotoUrl?: string | null;
+  ubicacion?: string | null;
+  moodColor?: string | null;
+  cancionUrl?: string | null;
 }
 
 export interface MemoriasByMonthInput {
@@ -21,14 +21,14 @@ export interface MemoriasByMonthInput {
 }
 
 export interface UpdateMemoriaInput {
-  fecha?: Date;
-  hora?: string;
-  titulo?: string;
-  descripcion?: string;
-  fotoUrl?: string;
-  ubicacion?: string;
-  moodColor?: string;
-  cancionUrl?: string;
+  fecha?: Date | null;
+  hora?: string | null;
+  titulo?: string | null;
+  descripcion?: string | null;
+  fotoUrl?: string | null;
+  ubicacion?: string | null;
+  moodColor?: string | null;
+  cancionUrl?: string | null;
 }
 
 const memoriaWithAuthorSelect = Prisma.validator<Prisma.MemoriaDefaultArgs>()({
@@ -141,7 +141,7 @@ export async function updateMemoriaForUser(
 
   const updateData: Prisma.MemoriaUpdateInput = {};
 
-  if (input.fecha !== undefined) {
+  if (input.fecha !== undefined && input.fecha !== null) {
     updateData.fecha = input.fecha;
   }
 
@@ -149,7 +149,7 @@ export async function updateMemoriaForUser(
     updateData.hora = input.hora;
   }
 
-  if (input.titulo !== undefined) {
+  if (input.titulo !== undefined && input.titulo !== null) {
     updateData.titulo = input.titulo;
   }
 
