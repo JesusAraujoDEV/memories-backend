@@ -29,6 +29,22 @@ const optionalSongUrlSchema = z.preprocess(
   z.string().optional(),
 );
 
+const optionalPhotoUrlSchema = z.preprocess(
+  (value: unknown): unknown => {
+    if (value === null || value === undefined) {
+      return undefined;
+    }
+
+    if (typeof value === "string") {
+      const trimmedValue: string = value.trim();
+      return trimmedValue.length === 0 ? undefined : trimmedValue;
+    }
+
+    return value;
+  },
+  z.string().url().max(2048).optional(),
+);
+
 const optionalYearQuerySchema = z.preprocess(
   (value: unknown): unknown => {
     if (value === null || value === undefined) {
@@ -79,7 +95,7 @@ const createMemoriaSchema = z.object({
   hora: z.string().trim().min(1).max(20).optional(),
   titulo: z.string().trim().min(1).max(200).optional(),
   descripcion: z.string().trim().min(1).max(5000),
-  fotoUrl: z.url().max(2048).optional(),
+  fotoUrl: optionalPhotoUrlSchema,
   ubicacion: z.string().trim().max(255).optional(),
   moodColor: z.string().trim().max(32).optional(),
   cancionUrl: optionalSongUrlSchema,
@@ -90,7 +106,7 @@ const updateMemoriaSchema = z.object({
   hora: z.string().trim().min(1).max(20).optional(),
   titulo: z.string().trim().min(1).max(200).optional(),
   descripcion: z.string().trim().min(1).max(5000),
-  fotoUrl: z.url().max(2048).optional(),
+  fotoUrl: optionalPhotoUrlSchema,
   ubicacion: z.string().trim().max(255).optional(),
   moodColor: z.string().trim().max(32).optional(),
   cancionUrl: optionalSongUrlSchema,

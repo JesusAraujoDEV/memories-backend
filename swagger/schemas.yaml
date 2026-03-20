@@ -46,8 +46,15 @@ components:
           nullable: false
           example: Fue una manana fria con cielo despejado.
         fotoUrl:
-          type: string
+          oneOf:
+            - type: string
+              format: uri
+              maxLength: 2048
+            - type: string
+              enum:
+                - ""
           nullable: true
+          description: URL de foto opcional. Acepta null, cadena vacia o una URL valida.
           example: https://cdn.example.com/fotos/memoria-1.jpg
         ubicacion:
           type: string
