@@ -76,6 +76,50 @@ components:
           description: URL de cancion opcional. Acepta null, cadena vacia o una URL valida.
           example: https://open.spotify.com/track/xyz
 
+    UpdateMemoriaPatchInput:
+      type: object
+      properties:
+        fecha:
+          type: string
+          format: date-time
+          nullable: true
+          example: 2026-03-18T00:00:00.000Z
+        hora:
+          type: string
+          nullable: true
+          example: "08:30"
+        titulo:
+          type: string
+          nullable: true
+          example: Caminata al amanecer
+        descripcion:
+          type: string
+          nullable: true
+          example: Fue una manana fria con cielo despejado.
+        fotoUrl:
+          oneOf:
+            - type: string
+              format: uri
+              maxLength: 2048
+            - type: string
+              enum:
+                - ""
+          nullable: true
+          description: URL de foto opcional. Acepta null, cadena vacia o una URL valida.
+          example: https://cdn.example.com/fotos/memoria-1.jpg
+        ubicacion:
+          type: string
+          nullable: true
+          example: Caracas, Venezuela
+        moodColor:
+          type: string
+          nullable: true
+          example: '#FFD166'
+        cancionUrl:
+          type: string
+          nullable: true
+          example: '{"id":"123","name":"Call Me Maybe","artist":"Carly Rae Jepsen"}'
+
     Memoria:
       type: object
       required:

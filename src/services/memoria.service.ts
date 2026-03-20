@@ -24,7 +24,7 @@ export interface UpdateMemoriaInput {
   fecha?: Date;
   hora?: string;
   titulo?: string;
-  descripcion: string;
+  descripcion?: string;
   fotoUrl?: string;
   ubicacion?: string;
   moodColor?: string;
@@ -139,18 +139,47 @@ export async function updateMemoriaForUser(
 ): Promise<MemoriaWithAuthor> {
   await validateMemoriaOwnership(userId, memoriaId);
 
+  const updateData: Prisma.MemoriaUpdateInput = {};
+
+  if (input.fecha !== undefined) {
+    updateData.fecha = input.fecha;
+  }
+
+  if (input.hora !== undefined) {
+    updateData.hora = input.hora;
+  }
+
+  if (input.titulo !== undefined) {
+    updateData.titulo = input.titulo;
+  }
+
+  if (input.descripcion !== undefined) {
+    updateData.descripcion = input.descripcion;
+  }
+
+  if (input.fotoUrl !== undefined) {
+    updateData.fotoUrl = input.fotoUrl;
+  }
+
+  if (input.ubicacion !== undefined) {
+    updateData.ubicacion = input.ubicacion;
+  }
+
+  if (input.moodColor !== undefined) {
+    updateData.moodColor = input.moodColor;
+  }
+
+  if (input.cancionUrl !== undefined) {
+    updateData.cancionUrl = input.cancionUrl;
+  }
+
+  if (Object.keys(updateData).length === 0) {
+    throw new AppError("At least one field must be provided to update memoria", 400);
+  }
+
   return prisma.memoria.update({
     where: { id: memoriaId },
-    data: {
-      fecha: input.fecha,
-      hora: input.hora,
-      titulo: input.titulo,
-      descripcion: input.descripcion,
-      fotoUrl: input.fotoUrl,
-      ubicacion: input.ubicacion,
-      moodColor: input.moodColor,
-      cancionUrl: input.cancionUrl,
-    },
+    data: updateData,
     include: memoriaWithAuthorSelect.include,
   });
 }

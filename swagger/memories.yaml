@@ -132,11 +132,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-    put:
+    patch:
       tags:
         - Memorias
-      summary: Editar una memoria
-      description: Edita una memoria existente. Solo el usuario que la creo puede editarla.
+      summary: Actualizar parcialmente una memoria
+      description: Actualiza campos puntuales de una memoria existente. Solo el usuario que la creo puede editarla.
       security:
         - bearerAuth: []
       parameters:
@@ -153,7 +153,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateMemoriaInput'
+              $ref: '#/components/schemas/UpdateMemoriaPatchInput'
       responses:
         '200':
           description: Memoria actualizada correctamente

@@ -101,16 +101,16 @@ const createMemoriaSchema = z.object({
   cancionUrl: optionalSongUrlSchema,
 });
 
-const updateMemoriaSchema = z.object({
-  fecha: z.coerce.date().optional(),
-  hora: z.string().trim().min(1).max(20).optional(),
-  titulo: z.string().trim().min(1).max(200).optional(),
-  descripcion: z.string().trim().min(1).max(5000),
-  fotoUrl: optionalPhotoUrlSchema,
-  ubicacion: z.string().trim().max(255).optional(),
-  moodColor: z.string().trim().max(32).optional(),
-  cancionUrl: optionalSongUrlSchema,
-});
+const patchMemoriaSchema = z.preprocess(
+  (value: unknown): unknown => {
+    if (value === null || value === undefined) {
+      return {};
+    }
+
+    return value;
+  },
+  createMemoriaSchema.partial(),
+);
 
 const monthQuerySchema = z
   .object({
@@ -257,7 +257,7 @@ export async function getMemoriaById(req: Request, res: Response, next: NextFunc
   }
 }
 
-export async function updateMemoria(req: Request, res: Response, next: NextFunction): Promise<void> {
+export async function patchMemoria(req: Request, res: Response, next: NextFunction): Promise<void> {
   const parsedParams = memoriaIdSchema.safeParse(req.params);
 
   if (!parsedParams.success) {
@@ -265,7 +265,7 @@ export async function updateMemoria(req: Request, res: Response, next: NextFunct
     return;
   }
 
-  const parsedBody = updateMemoriaSchema.safeParse(req.body);
+  const parsedBody = patchMemoriaSchema.safeParse(req.body);
 
   if (!parsedBody.success) {
     sendValidationError(res, parsedBody.error);
