@@ -26,7 +26,7 @@ const optionalSongUrlSchema = z.preprocess(
 
     return value;
   },
-  z.string().url().max(2048).optional(),
+  z.string().optional(),
 );
 
 const optionalYearQuerySchema = z.preprocess(
