@@ -90,3 +90,12 @@ export const monthQuerySchema = z
 export const memoriaIdSchema = z.object({
   id: z.coerce.number().int().positive(),
 });
+
+export const reorderMemoriasSchema = z
+  .array(
+    z.object({
+      id: z.coerce.number().int().positive(),
+      orden: z.coerce.number().int().min(0),
+    }),
+  )
+  .min(1, "At least one memoria reorder item is required");

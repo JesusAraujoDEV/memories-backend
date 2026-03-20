@@ -23,6 +23,7 @@ model Usuario {
 model Memoria {
   id          Int      @id @default(autoincrement())
   fecha       DateTime
+  orden       Int      @default(0)
   hora        String?
   titulo      String
   descripcion String?  @db.Text

@@ -125,6 +125,7 @@ components:
       required:
         - id
         - fecha
+        - orden
         - titulo
         - createdAt
         - updatedAt
@@ -138,6 +139,10 @@ components:
           type: string
           format: date-time
           example: 2026-03-18T00:00:00.000Z
+        orden:
+          type: integer
+          format: int32
+          example: 0
         hora:
           type: string
           nullable: true
@@ -175,3 +180,19 @@ components:
           example: 2026-03-18T00:00:00.000Z
         usuario:
           $ref: '#/components/schemas/MemoriaAuthor'
+
+    ReorderMemoriaItem:
+      type: object
+      required:
+        - id
+        - orden
+      properties:
+        id:
+          type: integer
+          format: int32
+          example: 3
+        orden:
+          type: integer
+          format: int32
+          minimum: 0
+          example: 1

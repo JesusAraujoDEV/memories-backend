@@ -8,9 +8,16 @@ import {
   deleteMemoriaForUser,
   findMemoriaByIdForUser,
   findMemoriasByMonth,
+  reorderMemoriasForUser,
   updateMemoriaForUser,
 } from "../services/memoria.service";
-import { createMemoriaSchema, memoriaIdSchema, monthQuerySchema, patchMemoriaSchema } from "../schemas/memoria.schema";
+import {
+  createMemoriaSchema,
+  memoriaIdSchema,
+  monthQuerySchema,
+  patchMemoriaSchema,
+  reorderMemoriasSchema,
+} from "../schemas/memoria.schema";
 import { AppError } from "../utils/appError";
 import { sendValidationError } from "../utils/validation.util";
 
@@ -121,6 +128,23 @@ export async function deleteMemoria(req: Request, res: Response, next: NextFunct
     const userId: number = getAuthenticatedUserId(req);
     await deleteMemoriaForUser(userId, parsedParams.data.id);
     res.status(204).send();
+  } catch (error: unknown) {
+    next(error);
+  }
+}
+
+export async function reorderMemorias(req: Request, res: Response, next: NextFunction): Promise<void> {
+  const parsedBody = reorderMemoriasSchema.safeParse(req.body);
+
+  if (!parsedBody.success) {
+    sendValidationError(res, parsedBody.error);
+    return;
+  }
+
+  try {
+    const userId: number = getAuthenticatedUserId(req);
+    await reorderMemoriasForUser(userId, parsedBody.data);
+    res.status(200).json({ message: "Memorias reordered successfully" });
   } catch (error: unknown) {
     next(error);
   }

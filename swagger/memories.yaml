@@ -132,6 +132,49 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /api/memorias/reorder:
+    patch:
+      tags:
+        - Memorias
+      summary: Reordenar memorias
+      description: Reordena manualmente las memorias del usuario autenticado usando una lista de pares id y orden.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              minItems: 1
+              items:
+                $ref: '#/components/schemas/ReorderMemoriaItem'
+      responses:
+        '200':
+          description: Memorias reordenadas correctamente
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - message
+                properties:
+                  message:
+                    type: string
+                    example: Memorias reordered successfully
+        '400':
+          description: Cuerpo invalido para reordenamiento
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: No autorizado o una o mas memorias no pertenecen al usuario
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
     patch:
       tags:
         - Memorias

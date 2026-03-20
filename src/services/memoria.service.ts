@@ -31,6 +31,11 @@ export interface UpdateMemoriaInput {
   cancionUrl?: string | null;
 }
 
+export interface ReorderMemoriaInput {
+  id: number;
+  orden: number;
+}
+
 const memoriaWithAuthorSelect = Prisma.validator<Prisma.MemoriaDefaultArgs>()({
   include: {
     usuario: {
@@ -108,7 +113,34 @@ export async function findMemoriasByMonth(input: MemoriasByMonthInput): Promise<
   return prisma.memoria.findMany({
     where,
     include: memoriaWithAuthorSelect.include,
-    orderBy: [{ fecha: "desc" }, { hora: "desc" }, { id: "desc" }],
+    orderBy: [{ fecha: "desc" }, { orden: "asc" }, { hora: "desc" }, { id: "desc" }],
+  });
+}
+
+export async function reorderMemoriasForUser(userId: number, items: ReorderMemoriaInput[]): Promise<void> {
+  await prisma.$transaction(async (tx) => {
+    const memoriaIds: number[] = items.map((item: ReorderMemoriaInput) => item.id);
+
+    const ownedMemorias = await tx.memoria.findMany({
+      where: {
+        id: { in: memoriaIds },
+        usuarioId: userId,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    if (ownedMemorias.length !== memoriaIds.length) {
+      throw new AppError("You are not authorized to reorder one or more memorias", 401);
+    }
+
+    for (const item of items) {
+      await tx.memoria.update({
+        where: { id: item.id },
+        data: { orden: item.orden },
+      });
+    }
   });
 }
 
