@@ -1,6 +1,15 @@
+import path from 'node:path';
+
 import swaggerJsdoc, { Options } from 'swagger-jsdoc';
 
 import { env } from '../utils/env';
+
+const swaggerApiFiles = [
+  path.resolve(process.cwd(), 'swagger', 'schemas.yaml'),
+  path.resolve(process.cwd(), 'swagger', 'memories.yaml'),
+  path.resolve(process.cwd(), 'swagger', '*.yaml'),
+  path.resolve(process.cwd(), 'src', 'swagger', '**', '*.yaml'),
+];
 
 const servers = [
   { url: env.backendUrl, description: 'Servidor de Produccion' },
@@ -27,7 +36,7 @@ const options: Options = {
     },
     security: [{ bearerAuth: [] }],
   },
-  apis: ['./src/swagger/**/*.yaml', './swagger/**/*.yaml'],
+  apis: swaggerApiFiles,
 };
 
 export const swaggerSpec = swaggerJsdoc(options);
